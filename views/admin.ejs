@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Devil is in details</h1>
+    <form action="/admin/search" method="POST">
+        <label for="group">Введіть групу:</label>
+        <input type="text" name="group" required>
+        <button type="submit">Шукати</button>
+    </form>
+    
+    <% if (students) { %>
+        <h3>Результати пошуку:</h3>
+        <ul>
+            <% students.forEach(student => { %>
+                <li><%= student.name %> (Група: <%= student.group %>)</li>
+            <% }) %>
+        </ul>
+    <% } %>
+    
+</body>
+</html>
