@@ -16,3 +16,9 @@ app.get('/student', usersController.studentPage);
 app.listen(3000, () => {
     console.log('Сервер працює на http://localhost:3000');
 });
+const authRouter = require('./controllers/authController');
+
+app.use(express.urlencoded({ extended: true })); // Для отримання даних з форми
+app.set('view engine', 'ejs');
+
+app.use('/', authRouter);
