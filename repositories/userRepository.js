@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 const usersFile = path.join(__dirname, '../data/users.json');
 

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 function authenticate(username, password) {
     const data = fs.readFileSync('./data/users.json', 'utf-8');
