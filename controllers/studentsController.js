@@ -32,18 +32,36 @@ async function getStudentsWithAsync() {
     return JSON.parse(data);
 }
 
-// Контролер для обробки форми
+async function getStudentsWithAsync() {
+    const data = await fs.promises.readFile(studentsFile, 'utf-8');
+    return JSON.parse(data);
+}
+
 exports.searchStudents = async (req, res) => {
     const { group } = req.body;
     let students = [];
 
     try {
-        // Використовуємо async/await
         const allStudents = await getStudentsWithAsync();
-        students = allStudents.filter(student => student.group === group);
-    } catch (err) {
-        return res.render('admin', { error: 'Помилка читання файлу', students: null });
-    }
 
-    res.render('admin', { students });
+        if (group.length >= 3 && group[2] === '-') {
+            // Пошук студентів за групою
+            students = allStudents[group] || [];
+        } else {
+            // Пошук за прізвищем серед усіх груп
+            for (const groupName in allStudents) {
+                allStudents[groupName].forEach(student => {
+                    const lastName = student.name.split(' ')[0];
+                    if (lastName.toLowerCase() === group.toLowerCase()) {
+                        students.push({ name: student.name, group: groupName });
+                    }
+                });
+            }
+        }
+
+        res.render('admin', { students, selectedGroup: group });
+
+    } catch (err) {
+        return res.render('admin', { error: 'Помилка читання файлу', students: [], selectedGroup: group });
+    }
 };

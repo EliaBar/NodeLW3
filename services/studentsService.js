@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const studensController = require('../controllers/studentsController');
+const studentsController = require('../controllers/studentsController');
 
 router.get('/admin', (req, res) => {
-    res.render('admin', { students: null });
+    res.render('admin', { students: null, selectedGroup: "" });
 });
 
-router.post('/admin/search', studensController.searchStudents);
+router.post('/admin/search', studentsController.searchStudents);
 
 module.exports = router;

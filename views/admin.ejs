@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Групи студентів</title>
 </head>
 <body>
     <h1>Devil is in details</h1>
     <form action="/admin/search" method="POST">
         <label for="group">Введіть групу:</label>
-        <input type="text" name="group" required>
+        <input type="text" name="group" value="<%= selectedGroup || '' %>" required>
         <button type="submit">Шукати</button>
     </form>
-    <% if (students) { %>
-        <h3>Результати пошуку:</h3>
-        <ul>
+    <% if (students && students.length > 0) { %>
+        <h3>Результати пошуку для "<%= selectedGroup %>":</h3>
+        <ol>
             <% students.forEach(student => { %>
-                <li><%= student.name %> (Група: <%= student.group %>)</li>
+                <li>
+                    <%= student.name %>
+                    <% if (student.group) { %>
+                        (Група: <%= student.group %>)
+                    <% } %>
+                </li>
             <% }) %>
-        </ul>
+        </ol>
+    <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !== '') { %>
+        <p>Нічого не знайдено за запитом "<%= selectedGroup %>".</p>
     <% } %>
 </body>
 </html>
