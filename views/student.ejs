@@ -40,32 +40,12 @@
         <thead>
           <tr>
             <th>ПІБ</th>
-            <th>Редагувати</th>
-            <th>Видалити</th>
           </tr>
         </thead>
         <tbody>
           <% students.forEach(student => { %>
           <tr>
             <td><%= student.name %></td>
-            <td>
-              <button
-                class="edit-btn"
-                onclick="editStudent('<%= student.id %>', '<%= student.name %>')"
-              >
-                ✏️
-              </button>
-            </td>
-            <td>
-              <form action="/admin/delete" method="POST" class="delete-form">
-                <input
-                  type="hidden"
-                  name="studentId"
-                  value="<%= student.id %>"
-                />
-                <button type="submit" class="delete-btn">🗑️</button>
-              </form>
-            </td>
           </tr>
           <% }) %>
         </tbody>

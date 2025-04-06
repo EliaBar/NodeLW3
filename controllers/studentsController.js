@@ -54,11 +54,21 @@ exports.searchStudents = async (req, res) => {
             }
         }
 
-        res.render('admin', { students, selectedGroup: group });
-        res.render('student', { students, selectedGroup: group });
+        const isAdminRoute = req.originalUrl.includes('/admin');
+
+        if (isAdminRoute) {
+            res.render('admin', { students, selectedGroup: group });
+        } else {
+            res.render('student', { students, selectedGroup: group });
+        }
 
     } catch (err) {
-        return res.render('admin', { error: 'Помилка читання файлу', students: [], selectedGroup: group });
-        return res.render('student', { error: 'Помилка читання файлу', students: [], selectedGroup: group });
+        const isAdminRoute = req.originalUrl.includes('/admin');
+
+        if (isAdminRoute) {
+            res.render('admin', { error: 'Помилка читання файлу', students: [], selectedGroup: group });
+        } else {
+            res.render('student', { error: 'Помилка читання файлу', students: [], selectedGroup: group });
+        }
     }
 };
