@@ -45,13 +45,15 @@
         <tbody>
           <% students.forEach(student => { %>
           <tr>
-            <td><%= student.name %></td>
+            <td><%= student.name %>
+            <% if (student.group) { %> (Група: <%= student.group %>) <% } %></td>
           </tr>
           <% }) %>
         </tbody>
       </table>
 
-      <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !== '') { %>
+      <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !==
+      '') { %>
       <p class="answear">
         Нічого не знайдено за запитом "<%= selectedGroup %>".
       </p>
