@@ -1,31 +1,248 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles.css" />
     <title>Групи студентів</title>
-</head>
-<body>
-    <h1>Devil is in details</h1>
-    <form action="/admin/search" method="POST">
-        <label for="group">Введіть групу:</label>
-        <input type="text" name="group" value="<%= selectedGroup || '' %>" required>
-        <button type="submit">Шукати</button>
-    </form>
-    <% if (students && students.length > 0) { %>
-        <h3>Результати пошуку для "<%= selectedGroup %>":</h3>
-        <ol>
-            <% students.forEach(student => { %>
-                <li>
-                    <%= student.name %>
-                    <% if (student.group) { %>
-                        (Група: <%= student.group %>)
-                    <% } %>
-                </li>
-            <% }) %>
-        </ol>
-    <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !== '') { %>
-        <p>Нічого не знайдено за запитом "<%= selectedGroup %>".</p>
-    <% } %>
-</body>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <!-- Пошук групи -->
+        <form action="/admin/search" method="POST" class="group-search">
+          <div class="group-search__input-wrapper">
+            <input
+              type="text"
+              name="group"
+              value="<%= selectedGroup || '' %>"
+              required
+              class="group-search__input"
+              placeholder="Введіть дані для пошуку"
+            />
+            <button
+              type="submit"
+              class="group-search__icon group-search__icon--search"
+            >
+              🔍
+            </button>
+          </div>
+        </form>
+
+        <!-- Кнопка додавання групи (вставляється динамічно через JS) -->
+        <div id="admin-controls"></div>
+        <!-- Кнопка додавання студента (тільки при наявності результатів) -->
+        <% if (students && students.length > 0) { %>
+        <button id="open-modal-student-btn" class="group-search__add-group">
+          Додати студента до групи <%= selectedGroup %>
+          <span class="group-search__add-icon">➕</span>
+        </button>
+        <% } %>
+      </div>
+
+      <!-- Список студентів -->
+      <% if (students && students.length > 0) { %>
+      <div class="answear">
+        <p>Результати пошуку для "<%= selectedGroup %>":</p>
+      </div>
+
+      <table class="student-table">
+        <thead>
+          <tr>
+            <th>ПІБ</th>
+            <th>Редагувати</th>
+            <th>Видалити</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% students.forEach(student => { %>
+          <tr>
+            <td><%= student.name %></td>
+            <td>
+              <button
+                class="edit-btn"
+                onclick="editStudent('<%= student.id %>', '<%= student.name %>')"
+              >
+                ✏️
+              </button>
+            </td>
+            <td>
+              <form action="/admin/delete" method="POST" class="delete-form">
+                <input
+                  type="hidden"
+                  name="studentId"
+                  value="<%= student.id %>"
+                />
+                <button type="submit" class="delete-btn">🗑️</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !==
+      '') { %>
+      <p class="answear">
+        Нічого не знайдено за запитом "<%= selectedGroup %>".
+      </p>
+      <% } %>
+
+      <!-- Модальне вікно: Додати групу -->
+      <div id="modal-add-group" class="modal hidden">
+        <div class="modal__content">
+          <h2 class="modal__title">Нова група</h2>
+          <form
+            id="add-group-form"
+            action="/admin/add-group"
+            method="POST"
+            class="modal__form"
+          >
+            <input
+              type="text"
+              name="groupName"
+              placeholder="Введіть назву групи"
+              required
+              class="modal__input"
+            />
+            <div class="modal__actions">
+              <button type="submit" class="modal__btn modal__btn--confirm">
+                Додати
+              </button>
+              <button
+                type="button"
+                id="close-modal-group-btn"
+                class="modal__btn modal__btn--cancel"
+              >
+                Закрити
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Модальне вікно: Додати студента -->
+      <div id="modal-add-student" class="modal hidden">
+        <div class="modal__content">
+          <h2 class="modal__title">Новий студент</h2>
+          <form action="/admin/add-student" method="POST" class="modal__form">
+            <label for="newStudentName" class="modal__label">Імʼя:</label>
+            <input
+              type="text"
+              id="newStudentName"
+              name="studentName"
+              required
+              class="modal__input"
+            />
+            <input type="hidden" name="group" value="<%= selectedGroup %>" />
+            <div class="modal__actions">
+              <button type="submit" class="modal__btn modal__btn--confirm">
+                ➕ Додати
+              </button>
+              <button
+                type="button"
+                id="close-modal-student-btn"
+                class="modal__btn modal__btn--cancel"
+              >
+                Скасувати
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Модальне вікно: Редагувати студента -->
+      <div id="modal-edit-student" class="modal hidden">
+        <div class="modal__content">
+          <h2 class="modal__title">Редагувати студента</h2>
+          <form action="/admin/edit" method="POST" class="modal__form">
+            <input type="hidden" name="studentId" id="editStudentId" />
+            <label for="editStudentName" class="modal__label">ПІБ:</label>
+            <input
+              type="text"
+              id="editStudentName"
+              name="studentName"
+              required
+              class="modal__input"
+            />
+            <div class="modal__actions">
+              <button type="submit" class="modal__btn modal__btn--confirm">
+                💾 Зберегти
+              </button>
+              <button
+                type="button"
+                id="close-edit-modal-btn"
+                class="modal__btn modal__btn--cancel"
+              >
+                Скасувати
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const modalAddGroup = document.getElementById("modal-add-group");
+      const modalAddStudent = document.getElementById("modal-add-student");
+      const modalEditStudent = document.getElementById("modal-edit-student");
+
+      const closeGroupBtn = document.getElementById("close-modal-group-btn");
+      const closeStudentBtn = document.getElementById(
+        "close-modal-student-btn"
+      );
+      const closeEditModalBtn = document.getElementById("close-edit-modal-btn");
+
+      const studentBtn = document.getElementById("open-modal-student-btn");
+
+      // Додати кнопку “Додати групу” тільки якщо URL містить /admin
+      const adminControls = document.getElementById("admin-controls");
+      if (window.location.pathname === "/admin") {
+        const groupBtn = document.createElement("button");
+        groupBtn.id = "open-modal-group-btn";
+        groupBtn.className = "group-search__add-group";
+        groupBtn.innerHTML =
+          'Додати нову групу <span class="group-search__add-icon">➕</span>';
+        adminControls.appendChild(groupBtn);
+
+        groupBtn.addEventListener("click", () => {
+          modalAddGroup.classList.remove("hidden");
+        });
+      }
+
+      // Закриття модалок
+      if (closeGroupBtn)
+        closeGroupBtn.addEventListener("click", () =>
+          modalAddGroup.classList.add("hidden")
+        );
+      if (closeStudentBtn)
+        closeStudentBtn.addEventListener("click", () =>
+          modalAddStudent.classList.add("hidden")
+        );
+      if (closeEditModalBtn)
+        closeEditModalBtn.addEventListener("click", () =>
+          modalEditStudent.classList.add("hidden")
+        );
+
+      if (studentBtn) {
+        studentBtn.addEventListener("click", () =>
+          modalAddStudent.classList.remove("hidden")
+        );
+      }
+
+      // Відкриття модального редагування
+      function editStudent(id, name) {
+        document.getElementById("editStudentId").value = id;
+        document.getElementById("editStudentName").value = name;
+        modalEditStudent.classList.remove("hidden");
+      }
+
+      // Якщо після створення групи ми повернулись із параметром ?newGroup=true — відкриваємо студентське модальне
+      if (
+        new URLSearchParams(window.location.search).get("newGroup") === "true"
+      ) {
+        modalAddStudent.classList.remove("hidden");
+      }
+    </script>
+  </body>
 </html>

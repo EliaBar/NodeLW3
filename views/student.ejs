@@ -1,11 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>I am just not першачок</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Student</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <!-- Пошук групи -->
+        <form action="/admin/search" method="POST" class="group-search">
+          <div class="group-search__input-wrapper">
+            <input
+              type="text"
+              name="group"
+              value="<%= selectedGroup || '' %>"
+              required
+              class="group-search__input"
+              placeholder="Введіть дані для пошуку"
+            />
+            <button
+              type="submit"
+              class="group-search__icon group-search__icon--search"
+            >
+              🔍
+            </button>
+          </div>
+        </form>
+
+        <% } %>
+      </div>
+
+      <!-- Список студентів -->
+      <% if (students && students.length > 0) { %>
+      <div class="answear">
+        <p>Результати пошуку для "<%= selectedGroup %>":</p>
+      </div>
+
+      <table class="student-table">
+        <thead>
+          <tr>
+            <th>ПІБ</th>
+            <th>Редагувати</th>
+            <th>Видалити</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% students.forEach(student => { %>
+          <tr>
+            <td><%= student.name %></td>
+            <td>
+              <button
+                class="edit-btn"
+                onclick="editStudent('<%= student.id %>', '<%= student.name %>')"
+              >
+                ✏️
+              </button>
+            </td>
+            <td>
+              <form action="/admin/delete" method="POST" class="delete-form">
+                <input
+                  type="hidden"
+                  name="studentId"
+                  value="<%= student.id %>"
+                />
+                <button type="submit" class="delete-btn">🗑️</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !==
+      '') { %>
+      <p class="answear">
+        Нічого не знайдено за запитом "<%= selectedGroup %>".
+      </p>
+      <% } %>
+    </div>
+  </body>
 </html>
