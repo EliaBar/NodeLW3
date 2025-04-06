@@ -28,8 +28,6 @@
             </button>
           </div>
         </form>
-
-        <% } %>
       </div>
 
       <!-- Список студентів -->
@@ -73,8 +71,7 @@
         </tbody>
       </table>
 
-      <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !==
-      '') { %>
+      <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !== '') { %>
       <p class="answear">
         Нічого не знайдено за запитом "<%= selectedGroup %>".
       </p>

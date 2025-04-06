@@ -32,11 +32,6 @@ async function getStudentsWithAsync() {
     return JSON.parse(data);
 }
 
-async function getStudentsWithAsync() {
-    const data = await fs.promises.readFile(studentsFile, 'utf-8');
-    return JSON.parse(data);
-}
-
 exports.searchStudents = async (req, res) => {
     const { group } = req.body;
     let students = [];
@@ -60,8 +55,10 @@ exports.searchStudents = async (req, res) => {
         }
 
         res.render('admin', { students, selectedGroup: group });
+        res.render('student', { students, selectedGroup: group });
 
     } catch (err) {
         return res.render('admin', { error: 'Помилка читання файлу', students: [], selectedGroup: group });
+        return res.render('student', { error: 'Помилка читання файлу', students: [], selectedGroup: group });
     }
 };

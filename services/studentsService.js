@@ -8,4 +8,10 @@ router.get('/admin', (req, res) => {
 
 router.post('/admin/search', studentsController.searchStudents);
 
+router.get('/student', (req, res) => {
+    res.render('student', { students: null, selectedGroup: "" });
+});
+
+router.post('/student/search', studentsController.searchStudents);
+
 module.exports = router;
