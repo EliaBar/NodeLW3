@@ -57,22 +57,20 @@
         <tbody>
           <% students.forEach(student => { %>
           <tr>
-            <td><%= student.name %></td>
+            <td><%= student.name %>
+              <% if (student.group) { %> (Група: <%= student.group %>) <% } %></td>
             <td>
               <button
                 class="edit-btn"
-                onclick="editStudent( '<%= selectedGroup %>', '<%= student.name %>')"
+                onclick="editStudent('<%= selectedGroup.includes('-') ? selectedGroup : student.group %>', '<%= student.name %>')"
               >
                 ✏️
               </button>
             </td>
             <td>
               <form action="/admin/delete" method="POST" class="delete-form">
-                <input
-                  type="hidden"
-                  name="studentId"
-                  value="<%= student.id %>"
-                />
+                <input type="hidden" name="group" value="<%= selectedGroup.includes('-') ? selectedGroup : student.group %>">
+                <input type="hidden" name="studentName" value="<%= student.name %>">
                 <button type="submit" class="delete-btn">🗑️</button>
               </form>
             </td>
