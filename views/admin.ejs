@@ -61,7 +61,7 @@
             <td>
               <button
                 class="edit-btn"
-                onclick="editStudent('<%= student.id %>', '<%= student.name %>')"
+                onclick="editStudent( '<%= selectedGroup %>', '<%= student.name %>')"
               >
                 ✏️
               </button>
@@ -156,8 +156,9 @@
         <div class="modal__content">
           <h2 class="modal__title">Редагувати студента</h2>
           <form action="/admin/edit" method="POST" class="modal__form">
-            <input type="hidden" name="studentId" id="editStudentId" />
-            <label for="editStudentName" class="modal__label">ПІБ:</label>
+            <input type="hidden" name="group" id="editStudentGroup" />
+            <input type="hidden" name="oldName" id="editOldName" />
+            <label for="editOldName" class="modal__label">ПІБ:</label>
             <input
               type="text"
               id="editStudentName"
@@ -231,9 +232,11 @@
       }
 
       // Відкриття модального редагування
-      function editStudent(id, name) {
-        document.getElementById("editStudentId").value = id;
-        document.getElementById("editStudentName").value = name;
+      function editStudent(group, name) {
+        document.getElementById("editStudentGroup").value = group;
+        document.getElementById("editOldName").value = name; 
+        console.log(group);
+        console.log(name);
         modalEditStudent.classList.remove("hidden");
       }
 

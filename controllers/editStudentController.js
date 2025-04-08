@@ -1,23 +1,24 @@
 const { getStudentsSync, saveStudentsSync } = require('../repositories/studentRepository');
 
 exports.editStudent = (req, res) => {
-  const { studentId, studentName, group } = req.body;  // Отримуємо studentId, studentName та group
-  const students = getStudentsSync();  // Отримуємо всі студенти з файлу
+  const { studentName, oldName, group } = req.body;
+  const students = getStudentsSync();  // Зчитуємо студентів
 
-  // Перевіряємо, чи є така група
+  console.log("studentName:", studentName);
+  console.log("oldName:", oldName);
+  console.log("group:", group);
+
   if (students[group]) {
-    // Перевіряємо, чи є студент з таким індексом у групі
-    const student = students[group][studentId];  // Використовуємо studentId як індекс
+    const student = students[group].find(s => s.name === oldName);
 
     if (student) {
-      // Якщо студент знайдений, змінюємо його ім'я
       student.name = studentName;
-      saveStudentsSync(students);  // Зберігаємо зміни
-      return res.redirect(`/admin/search?group=${group}`);  // Перенаправляємо на сторінку пошуку групи
+      saveStudentsSync(students);  // Зберігаємо оновлення
+      return res.redirect(`/admin`);
     } else {
-      return res.status(404).send('Student not found');  // Якщо студента не знайдено
+      return res.status(404).send('Student not found');
     }
   } else {
-    return res.status(404).send('Group not found');  // Якщо група не знайдена
+    return res.status(404).send('Group not found');
   }
 };
