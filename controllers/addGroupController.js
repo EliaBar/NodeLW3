@@ -3,10 +3,11 @@ const { getStudentsSync, saveStudentsSync } = require('../repositories/studentRe
 exports.addGroup = (req, res) => {
   const { groupName } = req.body;
   const students = getStudentsSync();
+
   if (!students[groupName]) {
     students[groupName] = [];
     saveStudentsSync(students);
-    group=groupName;
   }
-  res.redirect('/admin?newGroup=true');
+
+  res.redirect(`/admin?newGroup=true&selectedGroup=${encodeURIComponent(groupName)}`);
 };

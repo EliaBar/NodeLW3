@@ -185,16 +185,12 @@
       const modalAddGroup = document.getElementById("modal-add-group");
       const modalAddStudent = document.getElementById("modal-add-student");
       const modalEditStudent = document.getElementById("modal-edit-student");
-
+    
       const closeGroupBtn = document.getElementById("close-modal-group-btn");
-      const closeStudentBtn = document.getElementById(
-        "close-modal-student-btn"
-      );
+      const closeStudentBtn = document.getElementById("close-modal-student-btn");
       const closeEditModalBtn = document.getElementById("close-edit-modal-btn");
-
       const studentBtn = document.getElementById("open-modal-student-btn");
-
-      // Додати кнопку “Додати групу” тільки якщо URL містить /admin
+    
       const adminControls = document.getElementById("admin-controls");
       if (window.location.pathname === "/admin") {
         const groupBtn = document.createElement("button");
@@ -203,13 +199,12 @@
         groupBtn.innerHTML =
           'Додати нову групу <span class="group-search__add-icon">➕</span>';
         adminControls.appendChild(groupBtn);
-
+    
         groupBtn.addEventListener("click", () => {
           modalAddGroup.classList.remove("hidden");
         });
       }
-
-      // Закриття модалок
+    
       if (closeGroupBtn)
         closeGroupBtn.addEventListener("click", () =>
           modalAddGroup.classList.add("hidden")
@@ -222,28 +217,32 @@
         closeEditModalBtn.addEventListener("click", () =>
           modalEditStudent.classList.add("hidden")
         );
-
+    
       if (studentBtn) {
         studentBtn.addEventListener("click", () =>
           modalAddStudent.classList.remove("hidden")
         );
       }
-
-      // Відкриття модального редагування
+    
       function editStudent(group, name) {
         document.getElementById("editStudentGroup").value = group;
         document.getElementById("editOldName").value = name; 
-        console.log(group);
-        console.log(name);
         modalEditStudent.classList.remove("hidden");
       }
-
-      // Якщо після створення групи ми повернулись із параметром ?newGroup=true — відкриваємо студентське модальне
-      if (
-        new URLSearchParams(window.location.search).get("newGroup") === "true"
-      ) {
+    
+      // Відкрити модальне вікно додавання студента після створення групи
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("newGroup") === "true") {
+        const groupFromURL = urlParams.get("selectedGroup");
         modalAddStudent.classList.remove("hidden");
+    
+        // Автоматично заповнити поле "group" у формі
+        const groupInput = document.querySelector('#modal-add-student input[name="group"]');
+        if (groupInput && groupFromURL) {
+          groupInput.value = groupFromURL;
+        }
       }
     </script>
+    
   </body>
 </html>
