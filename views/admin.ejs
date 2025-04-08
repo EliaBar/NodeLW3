@@ -33,7 +33,7 @@
         <div id="admin-controls"></div>
 
         <!-- Кнопка додавання студента -->
-        <% if (students && students.length > 0) { %>
+        <% if (students && students.length >= 0 && selectedGroup.includes('-')) { %>
         <button id="open-modal-student-btn" class="group-search__add-group">
           Додати студента до групи <%= selectedGroup %>
           <span class="group-search__add-icon">➕</span>
