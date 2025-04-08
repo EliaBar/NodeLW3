@@ -31,7 +31,8 @@
 
         <!-- Кнопка додавання групи (вставляється динамічно через JS) -->
         <div id="admin-controls"></div>
-        <!-- Кнопка додавання студента (тільки при наявності результатів) -->
+
+        <!-- Кнопка додавання студента -->
         <% if (students && students.length > 0) { %>
         <button id="open-modal-student-btn" class="group-search__add-group">
           Додати студента до групи <%= selectedGroup %>
@@ -40,7 +41,7 @@
         <% } %>
       </div>
 
-      <!-- Список студентів -->
+      <!-- Якщо знайдені студенти -->
       <% if (students && students.length > 0) { %>
       <div class="answear">
         <p>Результати пошуку для "<%= selectedGroup %>":</p>
@@ -57,8 +58,10 @@
         <tbody>
           <% students.forEach(student => { %>
           <tr>
-            <td><%= student.name %>
-              <% if (student.group) { %> (Група: <%= student.group %>) <% } %></td>
+            <td>
+              <%= student.name %> <% if (student.group) { %> (Група: <%=
+              student.group %>) <% } %>
+            </td>
             <td>
               <button
                 class="edit-btn"
@@ -69,8 +72,16 @@
             </td>
             <td>
               <form action="/admin/delete" method="POST" class="delete-form">
-                <input type="hidden" name="group" value="<%= selectedGroup.includes('-') ? selectedGroup : student.group %>">
-                <input type="hidden" name="studentName" value="<%= student.name %>">
+                <input
+                  type="hidden"
+                  name="group"
+                  value="<%= selectedGroup.includes('-') ? selectedGroup : student.group %>"
+                />
+                <input
+                  type="hidden"
+                  name="studentName"
+                  value="<%= student.name %>"
+                />
                 <button type="submit" class="delete-btn">🗑️</button>
               </form>
             </td>
@@ -78,15 +89,15 @@
           <% }) %>
         </tbody>
       </table>
-
-      <% } else if (typeof selectedGroup !== 'undefined' && selectedGroup !==
-      '') { %>
-      <p class="answear">
-        Нічого не знайдено за запитом "<%= selectedGroup %>".
-      </p>
       <% } %>
 
-      <!-- Модальне вікно: Додати групу -->
+      <!-- Повідомлення -->
+      <% if (typeof message !== 'undefined' && message) { %>
+      <p class="answear"><%= message %></p>
+      <% } %>
+
+      <!-- Модальні вікна -->
+      <!-- Додати групу -->
       <div id="modal-add-group" class="modal hidden">
         <div class="modal__content">
           <h2 class="modal__title">Нова група</h2>
@@ -119,7 +130,7 @@
         </div>
       </div>
 
-      <!-- Модальне вікно: Додати студента -->
+      <!-- Додати студента -->
       <div id="modal-add-student" class="modal hidden">
         <div class="modal__content">
           <h2 class="modal__title">Новий студент</h2>
@@ -149,7 +160,7 @@
         </div>
       </div>
 
-      <!-- Модальне вікно: Редагувати студента -->
+      <!-- Редагувати студента -->
       <div id="modal-edit-student" class="modal hidden">
         <div class="modal__content">
           <h2 class="modal__title">Редагувати студента</h2>
@@ -185,13 +196,16 @@
       const modalAddGroup = document.getElementById("modal-add-group");
       const modalAddStudent = document.getElementById("modal-add-student");
       const modalEditStudent = document.getElementById("modal-edit-student");
-    
+
       const closeGroupBtn = document.getElementById("close-modal-group-btn");
-      const closeStudentBtn = document.getElementById("close-modal-student-btn");
+      const closeStudentBtn = document.getElementById(
+        "close-modal-student-btn"
+      );
       const closeEditModalBtn = document.getElementById("close-edit-modal-btn");
       const studentBtn = document.getElementById("open-modal-student-btn");
-    
+
       const adminControls = document.getElementById("admin-controls");
+
       if (window.location.pathname === "/admin") {
         const groupBtn = document.createElement("button");
         groupBtn.id = "open-modal-group-btn";
@@ -199,12 +213,12 @@
         groupBtn.innerHTML =
           'Додати нову групу <span class="group-search__add-icon">➕</span>';
         adminControls.appendChild(groupBtn);
-    
+
         groupBtn.addEventListener("click", () => {
           modalAddGroup.classList.remove("hidden");
         });
       }
-    
+
       if (closeGroupBtn)
         closeGroupBtn.addEventListener("click", () =>
           modalAddGroup.classList.add("hidden")
@@ -217,32 +231,31 @@
         closeEditModalBtn.addEventListener("click", () =>
           modalEditStudent.classList.add("hidden")
         );
-    
+
       if (studentBtn) {
         studentBtn.addEventListener("click", () =>
           modalAddStudent.classList.remove("hidden")
         );
       }
-    
+
       function editStudent(group, name) {
         document.getElementById("editStudentGroup").value = group;
-        document.getElementById("editOldName").value = name; 
+        document.getElementById("editOldName").value = name;
         modalEditStudent.classList.remove("hidden");
       }
-    
-      // Відкрити модальне вікно додавання студента після створення групи
+
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("newGroup") === "true") {
         const groupFromURL = urlParams.get("selectedGroup");
         modalAddStudent.classList.remove("hidden");
-    
-        // Автоматично заповнити поле "group" у формі
-        const groupInput = document.querySelector('#modal-add-student input[name="group"]');
+
+        const groupInput = document.querySelector(
+          '#modal-add-student input[name="group"]'
+        );
         if (groupInput && groupFromURL) {
           groupInput.value = groupFromURL;
         }
       }
     </script>
-    
   </body>
 </html>
