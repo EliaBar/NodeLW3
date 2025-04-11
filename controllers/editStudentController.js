@@ -2,7 +2,7 @@ const { getStudentsSync, saveStudentsSync } = require('../repositories/studentRe
 
 exports.editStudent = (req, res) => {
   const { studentName, oldName, group } = req.body;
-  const students = getStudentsSync();  // Зчитуємо студентів
+  const students = getStudentsSync();  
 
   console.log("studentName:", studentName);
   console.log("oldName:", oldName);
@@ -13,8 +13,8 @@ exports.editStudent = (req, res) => {
 
     if (student) {
       student.name = studentName;
-      saveStudentsSync(students);  // Зберігаємо оновлення
-      return res.redirect(`/admin`);
+      saveStudentsSync(students);  
+      res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
     } else {
       return res.status(404).send('Student not found');
     }

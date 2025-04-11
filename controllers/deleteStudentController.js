@@ -11,9 +11,8 @@ exports.deleteStudent = (req, res) => {
     return res.status(404).send('Group not found');
   }
 
-  // Видаляємо тільки в зазначеній групі
   students[group] = students[group].filter(s => s.name !== studentName);
 
   saveStudentsSync(students);
-  res.redirect(`/admin`);
+  res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
 };

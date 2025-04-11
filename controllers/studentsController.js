@@ -32,7 +32,7 @@ async function getStudentsWithAsync() {
   return JSON.parse(data);
 }
 exports.searchStudents = async (req, res) => {
-  const { group } = req.body;
+  const group = (req.body && req.body.group) || (req.query && req.query.group);
   let students = [];
   let message = null;
 

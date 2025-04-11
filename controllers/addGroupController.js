@@ -11,5 +11,5 @@ exports.addGroup = (req, res) => {
     saveStudentsSync(students);
     group = groupName;
   }
-  res.redirect("/admin?newGroup=true");
+  res.redirect("/admin");
 };

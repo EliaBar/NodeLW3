@@ -11,5 +11,5 @@ exports.addStudent = (req, res) => {
   students[group].push({ name: studentName });
   students[group].sort((a, b) => a.name.localeCompare(b.name));
   saveStudentsSync(students);
-  res.redirect(`/admin`);
+  res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
 };
