@@ -1,15 +1,18 @@
-const {
-  getStudentsSync,
-  saveStudentsSync,
-} = require("../repositories/studentRepository.js");
+const studentRepo = require('../repositories/studentRepositoryDB');
 
-exports.addGroup = (req, res) => {
+exports.addGroup = async (req, res) => {
   const { groupName } = req.body;
-  const students = getStudentsSync();
-  if (!students[groupName]) {
-    students[groupName] = [];
-    saveStudentsSync(students);
-    group = groupName;
+
+  try {
+    const existingGroup = await studentRepo.getGroupByName(groupName);
+
+    if (!existingGroup) {
+      await studentRepo.addGroup(groupName);
+    }
+
+    res.redirect('/admin');
+  } catch (err) {
+    console.error("Add group error:", err.message);
+    res.status(500).send('Failed to add group');
   }
-  res.redirect("/admin");
 };

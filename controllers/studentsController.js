@@ -1,58 +1,57 @@
-const fs = require("fs");
-const path = require("path");
-const studentsFile = path.join(__dirname, "../data/students.json");
+const studentRepo = require('../repositories/studentRepositoryDB'); 
 
-async function getStudentsWithAsync() {
-  const data = await fs.promises.readFile(studentsFile, "utf-8");
-  return JSON.parse(data);
-}
 exports.searchStudents = async (req, res) => {
-  const group = (req.body && req.body.group) || (req.query && req.query.group);
+  const groupOrLastName = (req.body && req.body.group) || (req.query && req.query.group) || '';
+  const isAdminRoute = req.originalUrl.includes('/admin');
   let students = [];
   let message = null;
 
   try {
-    const allStudents = await getStudentsWithAsync();
-    const isGroupSearch = group.length >= 3 && group[2] === "-";
-    const isAdminRoute = req.originalUrl.includes("/admin");
+    console.log('Обрана група або прізвище:', groupOrLastName);
+    const allStudentsGrouped = await studentRepo.getAllStudentsGroupedByGroup();
+
+    const isGroupSearch = groupOrLastName.length >= 3 && groupOrLastName[2] === '-';
 
     if (isGroupSearch) {
-      if (allStudents.hasOwnProperty(group)) {
-        students = allStudents[group];
+      // Пошук по назві групи
+      if (allStudentsGrouped.hasOwnProperty(groupOrLastName)) {
+        students = allStudentsGrouped[groupOrLastName];
         if (students.length === 0) {
-          message = `У групі ${group} немає студентів у групі. Додайте студентів.`;
+          message = `У групі ${groupOrLastName} немає студентів.`;
         }
       } else {
-        message = `Групу ${group} не знайдено.`;
+        message = `Групу ${groupOrLastName} не знайдено.`;
       }
     } else {
-      // Пошук за прізвищем
-      for (const groupName in allStudents) {
-        allStudents[groupName].forEach((student) => {
-          const lastName = student.name.split(" ")[0];
-          if (lastName.toLowerCase() === group.toLowerCase()) {
+      // Пошук по прізвищу
+      for (const groupName in allStudentsGrouped) {
+        allStudentsGrouped[groupName].forEach(student => {
+          const lastName = student.name.split(' ')[0];
+          if (lastName.toLowerCase() === groupOrLastName.toLowerCase()) {
             students.push({ name: student.name, group: groupName });
           }
         });
       }
+
       if (students.length === 0) {
-        message = `Студентів з прізвищем "${group}" не знайдено.`;
+        message = `Студентів з прізвищем "${groupOrLastName}" не знайдено.`;
       }
     }
 
-    res.render(isAdminRoute ? "admin" : "student", {
+    res.render(isAdminRoute ? 'admin' : 'student', {
       students,
-      selectedGroup: group,
+      selectedGroup: groupOrLastName,
       message,
-      error: null,
+      error: null
     });
+
   } catch (err) {
-    const isAdminRoute = req.originalUrl.includes("/admin");
-    res.render(isAdminRoute ? "admin" : "student", {
-      error: "Помилка читання файлу",
+    console.error('Помилка при обробці запиту:', err);
+    res.render(isAdminRoute ? 'admin' : 'student', {
       students: [],
-      selectedGroup: group,
+      selectedGroup: groupOrLastName,
       message: null,
+      error: 'Помилка зчитування з бази'
     });
   }
 };

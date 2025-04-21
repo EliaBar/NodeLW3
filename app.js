@@ -9,7 +9,7 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(adminRouter);
 
-app.get("/login", authController.loginPage);
+app.get('/login', authController.loginPage);
 app.post("/login", authController.login);
 app.get("/admin", usersController.adminPage);
 app.get("/student", usersController.studentPage);

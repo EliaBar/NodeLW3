@@ -1,27 +1,25 @@
-const { getStudents, saveStudentsSync } = require('../repositories/studentRepository');
+const studentRepo = require('../repositories/studentRepositoryDB');
 
-exports.editStudent = (req, res) => {
+exports.editStudent = async (req, res) => {
   const { studentName, oldName, group } = req.body;
 
-  getStudents((err, students) => {
-    if (err) {
-      console.error("Read error:", err);
-      return res.status(500).send('Failed to read student data');
+  try {
+    console.log('Old Name:', oldName);
+    console.log('New Name:', studentName);
+    console.log('Group:', group);
+
+    const student = await studentRepo.getStudentByNameAndGroup(oldName, group);
+    console.log('Found Student:', student);
+
+    if (!student) {
+      return res.status(404).send('Student not found');
     }
 
-    if (students[group]) {
-      const student = students[group].find(s => s.name === oldName);
+    await studentRepo.updateStudentName(student.id, studentName);
 
-      if (student) {
-        student.name = studentName;
-        saveStudentsSync(students); 
-        return res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
-      } else {
-        return res.status(404).send('Student not found');
-      }
-    } else {
-      return res.status(404).send('Group not found');
-    }
-  });
+    res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
+  } catch (err) {
+    console.error('Error updating student:', err.message, err.stack);
+    res.status(500).send('Failed to update student');
+  }
 };
-

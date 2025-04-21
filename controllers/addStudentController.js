@@ -1,15 +1,20 @@
-const {
-  getStudentsSync,
-  saveStudentsSync,
-} = require("../repositories/studentRepository");
+const studentRepo = require('../repositories/studentRepositoryDB');
 
-exports.addStudent = (req, res) => {
+exports.addStudent = async (req, res) => {
   const { studentName, group } = req.body;
-  
-  const students = getStudentsSync();
-  if (!students[group]) students[group] = [];
-  students[group].push({ name: studentName });
-  students[group].sort((a, b) => a.name.localeCompare(b.name));
-  saveStudentsSync(students);
-  res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
+
+  try {
+    const groupRecord = await studentRepo.getGroupByName(group);
+
+    if (!groupRecord) {
+      return res.status(404).send('Group not found');
+    }
+
+    await studentRepo.addStudent(studentName, groupRecord.id);
+
+    res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
+  } catch (err) {
+    console.error("Add error:", err.message);
+    res.status(500).send('Failed to add student');
+  }
 };

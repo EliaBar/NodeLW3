@@ -1,21 +1,20 @@
-const { getStudentsAsync, saveStudentsSync } = require('../repositories/studentRepository');
+const studentRepo = require('../repositories/studentRepositoryDB');
 
 exports.deleteStudent = async (req, res) => {
   const { studentName, group } = req.body;
 
   try {
-    const students = await getStudentsAsync();
+    const student = await studentRepo.getStudentByNameAndGroup(studentName, group);
 
-    if (!students[group]) {
-      return res.status(404).send('Group not found');
+    if (!student) {
+      return res.status(404).send('Student not found');
     }
 
-    students[group] = students[group].filter(s => s.name !== studentName);
+    await studentRepo.deleteStudentById(student.id);
 
-    saveStudentsSync(students); 
     res.redirect(`/admin/search?group=${encodeURIComponent(group)}`);
   } catch (err) {
-    console.error("Read error:", err);
-    res.status(500).send('Failed to read student data');
+    console.error("Delete error:", err.message);
+    res.status(500).send('Failed to delete student');
   }
 };

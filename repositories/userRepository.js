@@ -1,8 +1,10 @@
-const fs = require('fs');
+const db = require('./db'); 
 
-const usersFile = path.join(__dirname, '../data/users.json');
+async function getUserByUsername(username) {
+  const [rows] = await db.query('SELECT * FROM login WHERE username = ?', [username]);
+  return rows[0] || null; 
+}
 
-exports.getUsers = () => {
-    const data = fs.readFileSync(usersFile, 'utf-8');
-    return JSON.parse(data);
+module.exports = {
+  getUserByUsername
 };
